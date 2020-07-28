@@ -124,8 +124,8 @@ X_testing_bag_of_words = count.transform(legal_testing_sentence)
 # From the ass2.pdf there is not other conditions(parameters)
 # we need to modify. Therefore, just putting the training data into the model
 # The usage of MultinomialNB() is given by example.py
-# from the example line 51-54
-# line 51-54 Source: https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
+# from the example line 56-60
+# line 56-60 Source: https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
 ######################################################################################################################
 clf = MultinomialNB()
 model = clf.fit(X_training_bag_of_words, training_result)
