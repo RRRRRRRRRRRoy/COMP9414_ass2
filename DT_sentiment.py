@@ -1,4 +1,6 @@
 #######################################################################################################################
+# Decision Tree
+#######################################################################################################################
 # in the question we need to split the data set from the 'dataset.tsv'
 # and then using the training set and test set to train and modify our
 # our model of Decision tree
@@ -7,7 +9,6 @@ import sys
 import numpy as np
 import re
 import pandas as pd
-from sklearn.naive_bayes import MultinomialNB, BernoulliNB
 from sklearn.feature_extraction.text import CountVectorizer
 # from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
 from sklearn import tree
@@ -78,18 +79,21 @@ testing_result = np.array(testing_set[2])
 # Source: https://stackoverflow.com/questions/11331982/how-to-remove-any-url-within-a-string-in-python/11332580
 # Source: https://stackoverflow.com/questions/24399820/expression-to-remove-url-links-from-twitter-tweet/24399874
 ######################################################################################################################
-def get_legal_sentence(raw_sentence):
-    url_string = r'(http|https)+:\/\/.*[\r\n]*'
-    char_string = r'[^#@_$%\sa-zA-Z\d]'
+def polishing_illegal_sentence(raw_sentence):
+    protocal_part = r"(http|https|)"
+    capital_part = r"([a-zA-Z]|[0-9]|[$-_@.&+]"
+    slash_part = r"[!*\(\),]"
+    url_pattern_obj = re.compile(fr"{protocal_part}+:{capital_part}|{slash_part})")
+    illegal_character_pattern = r'[^#@_$%\sa-zA-Z\d]'
     result_sentence = list()
     for index in range(len(raw_sentence)):
-        delete_url = re.sub(url_string,' ',raw_sentence[index])
-        delete_illegal_character = re.sub(char_string,'',delete_url)
-        result_sentence.append(delete_illegal_character)
+        # delete_url = re.sub(url_pattern_obj,' ',raw_sentence[index])
+        # delete_illegal_character = re.sub(illegal_character_pattern,'',delete_url)
+        result_sentence.append(re.sub(illegal_character_pattern,'',re.sub(url_pattern_obj,' ',raw_sentence[index])))
     return result_sentence
 # deleting extra illegal info
-legal_training_sentence = np.array(get_legal_sentence(training_sentence))
-legal_testing_sentence = np.array(get_legal_sentence(testing_sentence))
+legal_training_sentence = np.array(polishing_illegal_sentence(training_sentence))
+legal_testing_sentence = np.array(polishing_illegal_sentence(testing_sentence))
 
 
 #######################################################################################################################
