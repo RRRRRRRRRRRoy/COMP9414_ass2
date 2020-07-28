@@ -120,14 +120,14 @@ X_training_bag_of_words = count.fit_transform(legal_training_sentence)
 X_testing_bag_of_words = count.transform(legal_testing_sentence)
 
 #######################################################################################################################
-# Using the BernoulliNB module from sklearn
+# Using the MultinomialNB module from sklearn
 # From the ass2.pdf there is not other conditions(parameters)
 # we need to modify. Therefore, just putting the training data into the model
-# The usage of BernoulliNB() is given by example.py
+# The usage of MultinomialNB() is given by example.py
 # from the example line 51-54
 # line 51-54 Source: https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
 ######################################################################################################################
-clf = BernoulliNB()
+clf = MultinomialNB()
 model = clf.fit(X_training_bag_of_words, training_result)
 predict_result = model.predict(X_testing_bag_of_words)
 
