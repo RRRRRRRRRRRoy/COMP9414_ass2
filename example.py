@@ -12,7 +12,7 @@ def predict_and_test(model, X_test_bag_of_words):
     predicted_y = model.predict(X_test_bag_of_words)
     print(y_test, predicted_y)
     print(model.predict_proba(X_test_bag_of_words))
-    print(classification_report(y_test, predicted_y,zero_division=0))
+    print(classification_report(y_test, predicted_y))
 
 # Create text
 text_data = np.array(['I love Brazil. Brazil is best',
@@ -44,9 +44,13 @@ y_test = y[3:]
 # create count vectorizer and fit it with training data
 count = CountVectorizer()
 X_train_bag_of_words = count.fit_transform(X_train)
-
+print()
+print(X_train)
+print(count.vocabulary_)
+print(X_train_bag_of_words)
 # transform the test data into bag of words creaed with fit_transform
 X_test_bag_of_words = count.transform(X_test)
+
 
 print("----bnb")
 clf = BernoulliNB()
