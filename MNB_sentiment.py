@@ -1,9 +1,9 @@
 #######################################################################################################################
-# Bernoulli Naive Bayes
+# Multinomial Naive Bayes
 #######################################################################################################################
 # in the question we need to split the data set from the 'dataset.tsv'
 # and then using the training set and test set to train and modify our
-# our model of bnb
+# our model of MNB
 #######################################################################################################################
 import pandas as pd
 import csv
