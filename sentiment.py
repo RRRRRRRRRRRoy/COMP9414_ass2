@@ -15,11 +15,7 @@ from sklearn.metrics import classification_report
 from sklearn.naive_bayes import MultinomialNB
 
 import nltk
-# nltk.download('stopwords')
-# nltk.download('wordnet')
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer,WordNetLemmatizer
-from nltk.stem.lancaster import LancasterStemmer
+from nltk.stem import PorterStemmer
 #######################################################################################################################
 # local test ----> for dryrun
 #######################################################################################################################
@@ -101,15 +97,16 @@ def stemming_words(sentence):
 # syntax : text = re.sub(r'^https?:\/\/.*[\r\n]*', '', text, flags=re.MULTILINE)
 # Source: https://stackoverflow.com/questions/11331982/how-to-remove-any-url-within-a-string-in-python/11332580
 ######################################################################################################################
-
 def polishing_illegal_sentence(raw_sentence):
     # Source: https://stackoverflow.com/questions/11331982/how-to-remove-any-url-within-a-string-in-python/11332580
-    url_pattern = r'^https?:\/\/.*[\r\n]*'
+    url_pattern_obj = r'^https?:\/\/.*[\r\n]*'
     illegal_character_pattern = r'[^#@_$%\sa-zA-Z\d]'
     result_sentence = list()
     for index in range(len(raw_sentence)):
-        # stemming_words(re.sub(illegal_character_pattern, '', re.sub(url_pattern_obj, ' ', raw_sentence[index])))
-        result_sentence.append(stemming_words(re.sub(illegal_character_pattern, '', re.sub(url_pattern, ' ', raw_sentence[index]))))
+        # only stem
+        delete_illegal_part = re.sub(illegal_character_pattern,'',re.sub(url_pattern_obj,' ',raw_sentence[index]))
+        Stemm_sentence = stemming_words(delete_illegal_part)
+        result_sentence.append(Stemm_sentence)
     return result_sentence
 
 # deleting extra illegal information from dataset
@@ -128,10 +125,11 @@ legal_testing_sentence = np.array(polishing_illegal_sentence(testing_sentence))
 # line 44-46 Source: https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
 #######################################################################################################################
 # writing the report to get the data info
-maximum_feature = 1000
-Low = False
+maximum_feature = 2000
+Low = True
+Up = False
 String_pattern = r'[#@_$%\w\d]{2,}'
-count = CountVectorizer(token_pattern= String_pattern,max_features=maximum_feature,lowercase=Low)
+count = CountVectorizer(token_pattern= String_pattern,max_features=maximum_feature,lowercase=Up)
 # Line 46 and 49 Source:  https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
 X_training_bag_of_words = count.fit_transform(legal_training_sentence)
 X_testing_bag_of_words = count.transform(legal_testing_sentence)
@@ -144,7 +142,7 @@ X_testing_bag_of_words = count.transform(legal_testing_sentence)
 # from the example line 56-60
 # line 56-60 Source: https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
 ######################################################################################################################
-clf = MultinomialNB(alpha=1)
+clf = MultinomialNB(alpha=0.899)
 model = clf.fit(X_training_bag_of_words, training_result)
 predict_result = model.predict(X_testing_bag_of_words)
 
@@ -154,7 +152,7 @@ predict_result = model.predict(X_testing_bag_of_words)
 # This is based on the code in fuction predict_and_test in example.py line 15
 # Line 15 Source: https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
 ######################################################################################################################
-print(classification_report(testing_result,predict_result))
+#print(classification_report(testing_result,predict_result))
 
 for i in range(len(testing_sentence)):
     print(testing_id[i],predict_result[i])
