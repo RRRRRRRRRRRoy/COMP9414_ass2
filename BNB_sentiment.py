@@ -13,7 +13,14 @@ import sys
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import classification_report
 from sklearn.naive_bayes import BernoulliNB
+from nltk.stem import PorterStemmer
+from nltk.corpus import stopwords
 
+
+import nltk
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
 #######################################################################################################################
 # local test ----> for dryrun
 #######################################################################################################################
@@ -72,6 +79,29 @@ testing_sentence = np.array(testing_set[1])
 # negative positive and neural
 testing_result = np.array(testing_set[2])
 
+
+def remove_stopwords(sentence):
+    stop_words = set(stopwords.words('english'))
+    words_in_sentence = sentence.split(" ")
+    # filtered_words = list()
+    # for index in range(len(words_in_sentence)):
+    #     if words_in_sentence[index] not in stop_words:
+    #         filtered_words.append(words_in_sentence[index])
+    filtered_words = [w for w in words_in_sentence if w not in stop_words]
+    remove_stop_sentence = ' '.join(w for w in filtered_words)
+    return remove_stop_sentence
+
+def stemming_words(sentence):
+    ps = PorterStemmer()
+    words_in_sentence = sentence.split(" ")
+    #getting_stem_words = list()
+    # for index in range(len(words_in_sentence)):
+    #     stemmed = ps.stem(words_in_sentence[index])
+    #     getting_stem_words.append(stemmed)
+    getting_stem_words = [ps.stem(w) for w in words_in_sentence]
+    getting_stemmed_sentence = " ".join(word for word in getting_stem_words)
+    return getting_stemmed_sentence
+
 #######################################################################################################################
 # Regular Expression: modified the data from the previous step we gotten
 # Using the RE module to process the data
@@ -93,7 +123,10 @@ def polishing_illegal_sentence(raw_sentence):
     for index in range(len(raw_sentence)):
         # delete_url = re.sub(url_pattern_obj,' ',raw_sentence[index])
         # delete_illegal_character = re.sub(illegal_character_pattern,'',delete_url)
-        result_sentence.append(re.sub(illegal_character_pattern,'',re.sub(url_pattern_obj,' ',raw_sentence[index])))
+        delete_illegal_part = re.sub(illegal_character_pattern,'',re.sub(url_pattern_obj,' ',raw_sentence[index]))
+        delete_stopwords = remove_stopwords(delete_illegal_part)
+        Stemm_sentence = stemming_words(delete_stopwords)
+        result_sentence.append(Stemm_sentence)
     return result_sentence
 
 # deleting extra illegal information from dataset
@@ -131,6 +164,14 @@ clf = BernoulliNB()
 model = clf.fit(X_training_bag_of_words, training_result)
 predict_result = model.predict(X_testing_bag_of_words)
 
-for i in range(len(testing_sentence)):
-    print(testing_id[i],predict_result[i])
+
+#######################################################################################################################
+# Printing the classification report
+# Using the function in Sklearn to print the result of classification
+# This is based on the code in fuction predict_and_test in example.py line 15
+# Line 15 Source: https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
+######################################################################################################################
+print(classification_report(testing_result,predict_result))
+# for i in range(len(testing_sentence)):
+#     print(testing_id[i],predict_result[i])
 

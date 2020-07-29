@@ -20,6 +20,8 @@ from sklearn import tree
 #######################################################################################################################
 # local test
 #######################################################################################################################
+from sklearn.metrics import classification_report
+
 data_set_file = 'training.tsv'
 test_set_file = 'test.tsv'
 
@@ -126,6 +128,13 @@ clf = tree.DecisionTreeClassifier(min_samples_leaf=minimum_leaf,criterion=cerite
 model = clf.fit(X_training_bag_of_words,training_result)
 predict_result = model.predict(X_testing_bag_of_words)
 
+#######################################################################################################################
+# Printing the classification report
+# Using the function in Sklearn to print the result of classification
+# This is based on the code in fuction predict_and_test in example.py line 15
+# Line 15 Source: https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
+######################################################################################################################
+print(classification_report(testing_result,predict_result))
 
-for i in range(len(testing_sentence)):
-    print(testing_id[i],predict_result[i])
+# for i in range(len(testing_sentence)):
+#     print(testing_id[i],predict_result[i])

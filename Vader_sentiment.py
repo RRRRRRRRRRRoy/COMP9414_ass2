@@ -7,8 +7,8 @@ import sys
 import numpy as np
 import re
 import pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer
-# from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
+from nltk.sentiment import SentimentIntensityAnalyzer
+from sklearn.metrics import classification_report
 from sklearn import tree
 
 # test in the terminal
@@ -64,3 +64,24 @@ testing_sentence = np.array(testing_set[1])
 # testing result which is used to calculate the accuracy
 # negative positive and neural
 testing_result = np.array(testing_set[2])
+
+#######################################################################################################################
+# using the SentimentIntensityAnalyzer function to test the dataset
+# The usage of this function is shown in the example.py
+# Based on the line 27-36 from the example.py
+# we can rewrite this part wo get a new training model
+# Line 27-36 Source:
+#######################################################################################################################
+analyser = SentimentIntensityAnalyzer()
+predict_result = list()
+check_compound = 'compound'
+for index in range(len(testing_sentence)):
+    score = analyser.polarity_scores(testing_sentence[index])
+    if score[check_compound] >= 0.05:
+        predict_result.append('positive')
+    elif score[check_compound] <= -0.05:
+        predict_result.append('negative')
+    else:
+        predict_result.append('neutral')
+
+print(classification_report(testing_result,predict_result))

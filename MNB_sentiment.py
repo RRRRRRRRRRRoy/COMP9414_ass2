@@ -114,7 +114,7 @@ legal_testing_sentence = np.array(polishing_illegal_sentence(testing_sentence))
 # writing the report to get the data info
 maximum_feature = 1000
 String_pattern = r'[#@_$%\w\d]{2,}'
-count = CountVectorizer(token_pattern= String_pattern)
+count = CountVectorizer(token_pattern= String_pattern,max_features=maximum_feature)
 # Line 46 and 49 Source:  https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
 X_training_bag_of_words = count.fit_transform(legal_training_sentence)
 X_testing_bag_of_words = count.transform(legal_testing_sentence)
@@ -131,5 +131,13 @@ clf = MultinomialNB()
 model = clf.fit(X_training_bag_of_words, training_result)
 predict_result = model.predict(X_testing_bag_of_words)
 
-for i in range(len(testing_sentence)):
-    print(testing_id[i],predict_result[i])
+#######################################################################################################################
+# Printing the classification report
+# Using the function in Sklearn to print the result of classification
+# This is based on the code in fuction predict_and_test in example.py line 15
+# Line 15 Source: https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
+######################################################################################################################
+print(classification_report(testing_result,predict_result))
+
+# for i in range(len(testing_sentence)):
+#     print(testing_id[i],predict_result[i])
