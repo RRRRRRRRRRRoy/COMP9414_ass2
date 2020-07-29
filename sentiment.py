@@ -15,22 +15,22 @@ from sklearn.metrics import classification_report
 from sklearn.naive_bayes import MultinomialNB
 
 import nltk
-nltk.download('stopwords')
-nltk.download('wordnet')
+# nltk.download('stopwords')
+# nltk.download('wordnet')
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer,WordNetLemmatizer
 from nltk.stem.lancaster import LancasterStemmer
 #######################################################################################################################
 # local test ----> for dryrun
 #######################################################################################################################
-# data_set_file = sys.argv[1]
-# test_set_file = sys.argv[2]
+data_set_file = sys.argv[1]
+test_set_file = sys.argv[2]
 
 #######################################################################################################################
 # local test
 #######################################################################################################################
-data_set_file = 'training.tsv'
-test_set_file = 'test.tsv'
+# data_set_file = 'training.tsv'
+# test_set_file = 'test.tsv'
 
 #######################################################################################################################
 # get the training set
@@ -100,9 +100,10 @@ def stemming_words(sentence):
 # defination of regular expression Source: https://en.wikipedia.org/wiki/Regular_expression
 # syntax : text = re.sub(r'^https?:\/\/.*[\r\n]*', '', text, flags=re.MULTILINE)
 # Source: https://stackoverflow.com/questions/11331982/how-to-remove-any-url-within-a-string-in-python/11332580
-# Source: https://stackoverflow.com/questions/24399820/expression-to-remove-url-links-from-twitter-tweet/24399874
 ######################################################################################################################
+
 def polishing_illegal_sentence(raw_sentence):
+    # Source: https://stackoverflow.com/questions/11331982/how-to-remove-any-url-within-a-string-in-python/11332580
     url_pattern = r'^https?:\/\/.*[\r\n]*'
     illegal_character_pattern = r'[^#@_$%\sa-zA-Z\d]'
     result_sentence = list()
@@ -155,5 +156,5 @@ predict_result = model.predict(X_testing_bag_of_words)
 ######################################################################################################################
 print(classification_report(testing_result,predict_result))
 
-# for i in range(len(testing_sentence)):
-#     print(testing_id[i],predict_result[i])
+for i in range(len(testing_sentence)):
+    print(testing_id[i],predict_result[i])

@@ -16,21 +16,21 @@ from sklearn.naive_bayes import BernoulliNB
 
 import nltk
 
-nltk.download('stopwords')
+# nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 
 #######################################################################################################################
 # local test ----> for dryrun
 #######################################################################################################################
-# data_set_file = sys.argv[1]
-# test_set_file = sys.argv[2]
+data_set_file = sys.argv[1]
+test_set_file = sys.argv[2]
 
 #######################################################################################################################
 # local test
 #######################################################################################################################
-data_set_file = 'training.tsv'
-test_set_file = 'test.tsv'
+# data_set_file = 'training.tsv'
+# test_set_file = 'test.tsv'
 
 #######################################################################################################################
 # get the training set
@@ -87,7 +87,6 @@ def remove_stopwords(sentence):
     stop_words = set(stopwords.words('english'))
     words_in_sentence = sentence.split(" ")
     filtered_words = list()
-    remove_stop_sentence = ''
     for index in range(len(words_in_sentence)):
         if words_in_sentence[index] not in stop_words:
             filtered_words.append(words_in_sentence[index])
@@ -115,9 +114,9 @@ def stemming_words(sentence):
 # defination of regular expression Source: https://en.wikipedia.org/wiki/Regular_expression
 # syntax : text = re.sub(r'^https?:\/\/.*[\r\n]*', '', text, flags=re.MULTILINE)
 # Source: https://stackoverflow.com/questions/11331982/how-to-remove-any-url-within-a-string-in-python/11332580
-# Source: https://stackoverflow.com/questions/24399820/expression-to-remove-url-links-from-twitter-tweet/24399874
 ######################################################################################################################
 def polishing_illegal_sentence(raw_sentence):
+    # Source: https://stackoverflow.com/questions/11331982/how-to-remove-any-url-within-a-string-in-python/11332580
     url_pattern = r'^https?:\/\/.*[\r\n]*'
     illegal_character_pattern = r'[^#@_$%\sa-zA-Z\d]'
     result_sentence = list()
@@ -153,7 +152,7 @@ maximum_feature = 1000
 String_pattern = r'[#@_$%\w\d]{2,}'
 # Question 5 change the lowercase of sentence
 Low = False
-count = CountVectorizer(token_pattern=String_pattern,lowercase=False)
+count = CountVectorizer(token_pattern=String_pattern,lowercase=Low)
 # Line 46 and 49 Source:  https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
 X_training_bag_of_words = count.fit_transform(legal_training_sentence)
 X_testing_bag_of_words = count.transform(legal_testing_sentence)
@@ -166,7 +165,7 @@ X_testing_bag_of_words = count.transform(legal_testing_sentence)
 # from the example line 51-54
 # line 51-54 Source: https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
 ######################################################################################################################
-clf = BernoulliNB()
+clf = BernoulliNB(alpha=1)
 model = clf.fit(X_training_bag_of_words, training_result)
 predict_result = model.predict(X_testing_bag_of_words)
 
@@ -176,6 +175,7 @@ predict_result = model.predict(X_testing_bag_of_words)
 # This is based on the code in fuction predict_and_test in example.py line 15
 # Line 15 Source: https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
 ######################################################################################################################
-print(classification_report(testing_result, predict_result))
-# for i in range(len(testing_sentence)):
-#     print(testing_id[i],predict_result[i])
+#print(classification_report(testing_result, predict_result))
+
+for i in range(len(testing_sentence)):
+    print(testing_id[i],predict_result[i])

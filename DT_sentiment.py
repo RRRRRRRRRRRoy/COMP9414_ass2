@@ -20,16 +20,16 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 
 # test in the terminal
-# data_set_file = sys.argv[1]
-# test_set_file = sys.argv[2]
+data_set_file = sys.argv[1]
+test_set_file = sys.argv[2]
 
 #######################################################################################################################
 # local test
 #######################################################################################################################
 from sklearn.metrics import classification_report
 
-data_set_file = 'training.tsv'
-test_set_file = 'test.tsv'
+# data_set_file = 'training.tsv'
+# test_set_file = 'test.tsv'
 
 #######################################################################################################################
 # get the training set
@@ -167,5 +167,5 @@ predict_result = model.predict(X_testing_bag_of_words)
 ######################################################################################################################
 # print(classification_report(testing_result, predict_result))
 
-# for i in range(len(testing_sentence)):
-#     print(testing_id[i],predict_result[i])
+for i in range(len(testing_sentence)):
+    print(testing_id[i],predict_result[i])
