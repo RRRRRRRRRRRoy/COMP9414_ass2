@@ -13,14 +13,13 @@ import sys
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import classification_report
 from sklearn.naive_bayes import BernoulliNB
-from nltk.stem import PorterStemmer
-from nltk.corpus import stopwords
-
 
 import nltk
+
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
+
 #######################################################################################################################
 # local test ----> for dryrun
 #######################################################################################################################
@@ -38,8 +37,8 @@ test_set_file = 'test.tsv'
 # in the tsv file, use '\t' to separate the data
 #######################################################################################################################
 seperator = '\t'
-training_set = pd.read_csv(data_set_file, sep = seperator,header = None)
-testing_set = pd.read_csv(test_set_file,sep = seperator, header = None)
+training_set = pd.read_csv(data_set_file, sep=seperator, header=None)
+testing_set = pd.read_csv(test_set_file, sep=seperator, header=None)
 
 #######################################################################################################################
 # get the content from the dataset(after we modify)
@@ -79,28 +78,33 @@ testing_sentence = np.array(testing_set[1])
 # negative positive and neural
 testing_result = np.array(testing_set[2])
 
-
+#######################################################################################################################
+# Question 4: using these 2 function remove_stopwards and stemming_words to test whether the stopwords and stem extraction
+# will effect the result.
+# download the data from nltk stopwards
+#######################################################################################################################
 def remove_stopwords(sentence):
     stop_words = set(stopwords.words('english'))
     words_in_sentence = sentence.split(" ")
-    # filtered_words = list()
-    # for index in range(len(words_in_sentence)):
-    #     if words_in_sentence[index] not in stop_words:
-    #         filtered_words.append(words_in_sentence[index])
-    filtered_words = [w for w in words_in_sentence if w not in stop_words]
-    remove_stop_sentence = ' '.join(w for w in filtered_words)
+    filtered_words = list()
+    remove_stop_sentence = ''
+    for index in range(len(words_in_sentence)):
+        if words_in_sentence[index] not in stop_words:
+            filtered_words.append(words_in_sentence[index])
+    remove_stop_sentence = ' '.join(filtered_words[index] for index in range(len(filtered_words)))
     return remove_stop_sentence
+
 
 def stemming_words(sentence):
     ps = PorterStemmer()
     words_in_sentence = sentence.split(" ")
-    #getting_stem_words = list()
-    # for index in range(len(words_in_sentence)):
-    #     stemmed = ps.stem(words_in_sentence[index])
-    #     getting_stem_words.append(stemmed)
-    getting_stem_words = [ps.stem(w) for w in words_in_sentence]
-    getting_stemmed_sentence = " ".join(word for word in getting_stem_words)
-    return getting_stemmed_sentence
+    getting_stem_words = list()
+    for index in range(len(words_in_sentence)):
+        stemmed = ps.stem(words_in_sentence[index])
+        getting_stem_words.append(stemmed)
+    stemmed_sentence = " ".join(getting_stem_words[index] for index in range(len(getting_stem_words)))
+    return stemmed_sentence
+
 
 #######################################################################################################################
 # Regular Expression: modified the data from the previous step we gotten
@@ -114,20 +118,19 @@ def stemming_words(sentence):
 # Source: https://stackoverflow.com/questions/24399820/expression-to-remove-url-links-from-twitter-tweet/24399874
 ######################################################################################################################
 def polishing_illegal_sentence(raw_sentence):
-    protocal_part = r"(http|https|)"
-    capital_part = r"([a-zA-Z]|[0-9]|[$-_@.&+]"
-    slash_part = r"[!*\(\),]"
-    url_pattern_obj = re.compile(fr"{protocal_part}+:{capital_part}|{slash_part})")
+    url_pattern = r'^https?:\/\/.*[\r\n]*'
     illegal_character_pattern = r'[^#@_$%\sa-zA-Z\d]'
     result_sentence = list()
     for index in range(len(raw_sentence)):
         # delete_url = re.sub(url_pattern_obj,' ',raw_sentence[index])
         # delete_illegal_character = re.sub(illegal_character_pattern,'',delete_url)
-        delete_illegal_part = re.sub(illegal_character_pattern,'',re.sub(url_pattern_obj,' ',raw_sentence[index]))
-        delete_stopwords = remove_stopwords(delete_illegal_part)
-        Stemm_sentence = stemming_words(delete_stopwords)
-        result_sentence.append(Stemm_sentence)
+        result_sentence.append(re.sub(illegal_character_pattern, '', re.sub(url_pattern, ' ', raw_sentence[index])))
+        # delete_illegal_part = re.sub(illegal_character_pattern,'',re.sub(url_pattern_obj,' ',raw_sentence[index]))
+        # delete_stopwords = remove_stopwords(delete_illegal_part)
+        # Stemm_sentence = stemming_words(delete_stopwords)
+        # result_sentence.append(Stemm_sentence)
     return result_sentence
+
 
 # deleting extra illegal information from dataset
 legal_training_sentence = np.array(polishing_illegal_sentence(training_sentence))
@@ -145,9 +148,12 @@ legal_testing_sentence = np.array(polishing_illegal_sentence(testing_sentence))
 # line 44-46 Source: https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
 #######################################################################################################################
 # writing the report to get the data info
+# Question 2 change the maximum feature
 maximum_feature = 1000
 String_pattern = r'[#@_$%\w\d]{2,}'
-count = CountVectorizer(token_pattern= String_pattern)
+# Question 5 change the lowercase of sentence
+Low = False
+count = CountVectorizer(token_pattern=String_pattern,lowercase=False)
 # Line 46 and 49 Source:  https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
 X_training_bag_of_words = count.fit_transform(legal_training_sentence)
 X_testing_bag_of_words = count.transform(legal_testing_sentence)
@@ -164,14 +170,12 @@ clf = BernoulliNB()
 model = clf.fit(X_training_bag_of_words, training_result)
 predict_result = model.predict(X_testing_bag_of_words)
 
-
 #######################################################################################################################
 # Printing the classification report
 # Using the function in Sklearn to print the result of classification
 # This is based on the code in fuction predict_and_test in example.py line 15
 # Line 15 Source: https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
 ######################################################################################################################
-print(classification_report(testing_result,predict_result))
+print(classification_report(testing_result, predict_result))
 # for i in range(len(testing_sentence)):
 #     print(testing_id[i],predict_result[i])
-
