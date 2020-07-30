@@ -87,8 +87,8 @@ def remove_stopwords(sentence):
     stop_words = set(stopwords.words('english'))
     words_in_sentence = sentence.split(" ")
     filtered_words = list()
-    remove_stop_sentence = ''
-    for index in range(len(words_in_sentence)):
+    len_word_in_sentence = len(words_in_sentence)
+    for index in range(len_word_in_sentence):
         if words_in_sentence[index] not in stop_words:
             filtered_words.append(words_in_sentence[index])
     remove_stop_sentence = ' '.join(filtered_words[index] for index in range(len(filtered_words)))
@@ -99,7 +99,8 @@ def stemming_words(sentence):
     ps = PorterStemmer()
     words_in_sentence = sentence.split(" ")
     getting_stem_words = list()
-    for index in range(len(words_in_sentence)):
+    len_word_in_sentence = len(words_in_sentence)
+    for index in range(len_word_in_sentence):
         stemmed = ps.stem(words_in_sentence[index])
         getting_stem_words.append(stemmed)
     stemmed_sentence = " ".join(getting_stem_words[index] for index in range(len(getting_stem_words)))
@@ -137,8 +138,10 @@ def polishing_illegal_sentence(raw_sentence):
 
 
 # deleting extra illegal information from dataset
-legal_training_sentence = np.array(polishing_illegal_sentence(training_sentence))
-legal_testing_sentence = np.array(polishing_illegal_sentence(testing_sentence))
+polishing_training_sentence = polishing_illegal_sentence(training_sentence)
+polished_testing_sentence = polishing_illegal_sentence(testing_sentence)
+legal_training_sentence = np.array(polishing_training_sentence)
+legal_testing_sentence = np.array(polished_testing_sentence)
 
 #######################################################################################################################
 # Training
@@ -159,8 +162,8 @@ String_pattern = r'[#@_$%\w\d]{2,}'
 Up = False
 count = CountVectorizer(token_pattern=String_pattern,lowercase=Up)
 # Line 46 and 49 Source:  https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
-X_training_bag_of_words = count.fit_transform(legal_training_sentence)
-X_testing_bag_of_words = count.transform(legal_testing_sentence)
+X_training_bag_words = count.fit_transform(legal_training_sentence)
+X_testing_bag_words = count.transform(legal_testing_sentence)
 
 #######################################################################################################################
 # Using the MultinomialNB module from sklearn
@@ -170,9 +173,9 @@ X_testing_bag_of_words = count.transform(legal_testing_sentence)
 # from the example line 56-60
 # line 56-60 Source: https://www.cse.unsw.edu.au/~cs9414/assignments/example.py
 ######################################################################################################################
-clf = MultinomialNB(alpha=1)
-model = clf.fit(X_training_bag_of_words, training_result)
-predict_result = model.predict(X_testing_bag_of_words)
+classification = MultinomialNB(alpha=1)
+MNB_model = classification.fit(X_training_bag_words, training_result)
+predict_result_MNB = MNB_model.predict(X_testing_bag_words)
 
 #######################################################################################################################
 # Printing the classification report
@@ -183,5 +186,6 @@ predict_result = model.predict(X_testing_bag_of_words)
 # print("MNB lowercase")
 # print(classification_report(testing_result, predict_result))
 
-for i in range(len(testing_sentence)):
-    print(testing_id[i],predict_result[i])
+length_testing_sentence = len(testing_sentence)
+for index in range(0,length_testing_sentence):
+    print(testing_id[index],predict_result_MNB[index])
